@@ -1,28 +1,17 @@
-def envVar = "WAKE_PATH"
-
-publish runner = match envVar.getenv
-  Some path =
-    makePathRunner "{envVar}-manual" 0.5 path manualRunner,
-    makePathRunner "{envVar}-fuse"   0.5 path fuseRunner,
-    Nil
-  None = Nil
-
 global def makePathRunner name scoreMultiplier path runner =
-  def inPath resource =
-    extract '([^/]*/)?([^/]+)/([^/]+)' resource
-    | at 1
-    | whichIn path
-    | (_ !=* "")
-    | try (\_ False)
-
-  def notInPath resource = !(inPath resource)
-
   def score rawPlan =
+    def notInPath resource =
+      extract '([^/]*/)?([^/]+)/([^/]+)' resource
+      | at 1
+      | whichIn path
+      | (_ ==* "")
+      | try (\_ True)
     def plan = editPlanResources notInPath.filter rawPlan
+    def handle _ = raise "{name}: cannot supply resources: {catWith " " plan.getPlanResources}"
     plan
     | runner.getRunnerScore
     | (_ *. scoreMultiplier)
-    | try (\_ raise "{name}: cannot supply resources: {catWith " " plan.getPlanResources}")
+    | try handle
 
   def pre runnerInput =
     runnerInput
@@ -32,17 +21,12 @@ global def makePathRunner name scoreMultiplier path runner =
   def post (Pair runnerOutput Unit) = runnerOutput
 
   makeRunner name score pre post runner
- 
 
-global def getEnvValue var env =
- def regex = "{var}=(.*)"
- env
- | filter (matches regex)
- | head
- | extract regex
- | head
+def envVar = "WAKE_PATH"
 
-global def editEnvValue var f env =
- def regex = "{var}=(.*)"
- def orig = getEnvValue var env
- map (replace regex "{var}={f orig}") env
+publish runner = match envVar.getenv
+  Some path =
+    makePathRunner "{envVar}-manual" 0.5 path manualRunner,
+    makePathRunner "{envVar}-fuse"   0.5 path fuseRunner,
+    Nil
+  None = Nil

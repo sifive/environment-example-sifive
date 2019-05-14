@@ -1,6 +1,3 @@
-# grabs RISCV_PATH and sets 
-def riscvEnvVar = "RISCV"
-
 def makeRISCVEnvVarRunner name scoreMultiplier riscvValue runner =
   def score plan =
     match plan.getPlanResources
@@ -23,6 +20,8 @@ def makeRISCVEnvVarRunner name scoreMultiplier riscvValue runner =
   def post (Pair runnerOutput Unit) = runnerOutput
 
   makeRunner name score pre post runner
+
+def riscvEnvVar = "RISCV"
 
 publish runner = match riscvEnvVar.getenv
   Some riscvValue =
