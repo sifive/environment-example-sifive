@@ -7,6 +7,6 @@ global def getEnvValue var env =
  | head
 
 global def editEnvValue var f env =
- def regex = "{var}=(.*)"
+ def regex = "^{var}=(.*)$"
  def orig = getEnvValue var env
  map (replace regex "{var}={f orig}") env
