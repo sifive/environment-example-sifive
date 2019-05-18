@@ -25,7 +25,7 @@ def riscvEnvVar = "RISCV"
 
 publish runner = match riscvEnvVar.getenv
   Some riscvValue =
-    makeRISCVEnvVarRunner "{riscvEnvVar}-manual" 0.5 riscvValue manualRunner,
-    makeRISCVEnvVarRunner "{riscvEnvVar}-fuse"   0.5 riscvValue fuseRunner,
+    makeRISCVEnvVarRunner "{riscvEnvVar}-manual" 2.0 riscvValue manualRunner,
+    makeRISCVEnvVarRunner "{riscvEnvVar}-fuse"   2.0 riscvValue fuseRunner,
     Nil
   None = Nil
