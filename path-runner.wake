@@ -1,17 +1,9 @@
 global def makePathRunner name scoreMultiplier path runner =
-  def score rawPlan =
-    def notInPath resource =
-      extract '([^/]*/)?([^/]+)/([^/]+)' resource
-      | at 1
-      | whichIn path
-      | (_ ==* "")
-      | try (\_ True)
-    def plan = editPlanResources notInPath.filter rawPlan
-    def handle _ = raise "{name}: cannot supply resources: {catWith " " plan.getPlanResources}"
+  def score plan =
     plan
+    | setPlanResources Nil
     | runner.getRunnerScore
     | (_ *. scoreMultiplier)
-    | try handle
 
   def pre runnerInput =
     runnerInput
