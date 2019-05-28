@@ -1,12 +1,13 @@
 def makeRISCVEnvVarRunner name scoreMultiplier riscvValue runner =
   def score plan =
+    def regex = `riscv-tools/[^/]+`
     match plan.getPlanResources
-      resource, Nil if matches 'riscv-tools/[^/]+' resource =
+      resource, Nil if matches regex resource =
         plan
-        | setPlanResources Nil
+        | editPlanResources (filter (! matches regex _))
         | runner.getRunnerScore
-        | (_ *. scoreMultiplier)
-      _ = raise "{name}: cannot supply resources: {catWith " " plan.getPlanResources}"
+        | rmap (_ *. scoreMultiplier)
+      _ = Fail "{name}: cannot supply resources: {catWith " " plan.getPlanResources}"
 
   def pre runnerInput =
     def addEnv env =
@@ -14,7 +15,7 @@ def makeRISCVEnvVarRunner name scoreMultiplier riscvValue runner =
       | editEnvValue "PATH" ("{riscvValue}/bin:{_}")
       | (_ ++ ("{riscvEnvVar}={riscvValue}", Nil))
     runnerInput
-    | editRunnerInputEnvironment addEnv
+    | rmap addEnv.editRunnerInputEnvironment
     | (Pair _ Unit)
 
   def post (Pair runnerOutput Unit) = runnerOutput
@@ -25,7 +26,7 @@ def riscvEnvVar = "RISCV"
 
 publish runner = match riscvEnvVar.getenv
   Some riscvValue =
-    makeRISCVEnvVarRunner "{riscvEnvVar}-manual" 2.0 riscvValue manualRunner,
-    makeRISCVEnvVarRunner "{riscvEnvVar}-fuse"   2.0 riscvValue fuseRunner,
+    makeRISCVEnvVarRunner "{riscvEnvVar}-local" 2.0 riscvValue localRunner,
+    makeRISCVEnvVarRunner "{riscvEnvVar}-default" 2.0 riscvValue defaultRunner,
     Nil
   None = Nil

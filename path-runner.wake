@@ -3,11 +3,11 @@ global def makePathRunner name scoreMultiplier path runner =
     plan
     | setPlanResources Nil
     | runner.getRunnerScore
-    | (_ *. scoreMultiplier)
+    | rmap (_ *. scoreMultiplier)
 
   def pre runnerInput =
     runnerInput
-    | editRunnerInputEnvironment (editEnvValue "PATH" ("{path}:{_}"))
+    | rmap (editEnvValue "PATH" ("{path}:{_}")).editRunnerInputEnvironment 
     | (Pair _ Unit)
 
   def post (Pair runnerOutput Unit) = runnerOutput
@@ -18,7 +18,7 @@ def envVar = "WAKE_PATH"
 
 publish runner = match envVar.getenv
   Some path =
-    makePathRunner "{envVar}-manual" 1.5 path manualRunner,
-    makePathRunner "{envVar}-fuse"   1.5 path fuseRunner,
+    makePathRunner "{envVar}-local" 1.5 path localRunner,
+    makePathRunner "{envVar}-default" 1.5 path defaultRunner,
     Nil
   None = Nil
