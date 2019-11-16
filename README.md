@@ -1,16 +1,27 @@
 # Overview
-This package can be added to your workspaces to provide job runners
-that can fulfill resources requested by plans.
+This package can be used to create a wake `runner` that will set environment
+variables for jobs from JSON values based on the resources they request.
 
 # Resources
-Resources describe a tool that is requested by a job. They are strings
-that have the format `{vendor}/{tool}/{version}`. If there is no vendor
-then the format is `{tool}/{version}`.
+Resources describe a tool that is requested by a job. They are strings.
+This package expects resources to have the format `{vendor}/{tool}/{version}`.
+If there is no vendor then the format is `{tool}/{version}`.
 
-# Runners
-This package provides a runner that sets the `PATH` of wake
-jobs to the value of the `WAKE_PATH` environment variable if it is set
-by the user.
+# Usage
+This package defines the global function `makeJSONEnvironmentRunner` that takes
+a `JSONEnvironmentRunnerPlan` and returns a `Runner`. This also defines
+`semverMatches`, which is a semver matching function using this
+[python package](https://pypi.org/project/semver/).
 
-This package also provides a runner that will provide the riscv-tools
-resource if the user has set the `RISCV` environment variable.
+Example:
+```wake
+publish runner = (
+  def name = "myRunner"
+  def scoreFn baseScore = baseScore +. 2.0
+  def semverMatchFn = semverMatches
+  def jvalues = subscribe myRunnerJValues
+  def baseRunner = defaultRunner
+  makeJSONEnvironmentRunnerPlan name scoreFn semverMatchFn jvalues baseRunner
+  | makeJSONEnvironmentRunner
+), Nil
+```
