@@ -24,7 +24,7 @@ requested.
   "verilator": {
     "4.008": {
       "PATH": "/verilator/bin",
-      "VERILATOR_ROOT: "/verilator"
+      "VERILATOR_ROOT": "/verilator"
     }
   }
 }
