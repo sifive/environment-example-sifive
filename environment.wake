@@ -106,13 +106,30 @@ global def makeJSONEnvironmentRunner (JSONEnvironmentRunnerPlan name scoreFn sem
 
 # returns True if `range` matches `version` exactly, otherwise checks for a match using the semver python package
 global def semverMatches range version =
-  if range ==* version then True else (
+  if range ==* version then True else
     def cmdline =
       "python3", "-c", "import semver; exit(not semver.match(\"{version}\", \"{range}\"))", Nil
     makePlan cmdline Nil
     | setPlanKeep False
-    | setPlanStderr logNever
-    | setPlanStdout logNever
+    | setPlanStderr logDebug
+    | setPlanStdout logDebug
+    | setPlanDirectory "python-semver"
     | runJobWith localRunner
     | isJobOk
-  )
+
+
+publish runner =
+  def jsonsResult =
+    subscribe environmentJSONs
+    | map parseJSONFile
+    | findFail
+  match jsonsResult
+    Fail e =
+      def _ = printlnLevel logError "Failed to publish environment JSON runner: {e.getErrorCause}"
+      Nil
+    Pass jsons =
+      def plans =
+        makeJSONEnvironmentRunnerPlan "environment-json-local" (_ *. 1.5) semverMatches jsons localRunner,
+        makeJSONEnvironmentRunnerPlan "environment-json-default" (_ *. 1.5) semverMatches jsons defaultRunner,
+        Nil
+      map makeJSONEnvironmentRunner plans

@@ -1,0 +1,7 @@
+[
+    {
+        "commit": "1bafb9f0aea0117a196eb7d112c3f0a0da783abf",
+        "name": "python-semver",
+        "source": "git@github.com:python-semver/python-semver.git"
+    }
+]
