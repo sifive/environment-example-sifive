@@ -26,14 +26,14 @@ def prependOrElseSetEnv env (Pair key value) =
   editEnvironment key editFn env
 
 
-def getEnvironmentFromJValue semverMatchFn resourceString jvalue =
+def getEnvironmentFromJValue versionMatchFn resourceString jvalue =
   def toolRange = extract `([^/]*)/([^/]*)` resourceString
   def vendorToolRange = extract `([^/]*)/([^/]*)/([^/]*)` resourceString
   def fieldsResult = match toolRange vendorToolRange
     _ (vendor, tool, range, Nil) =
-      jField vendor (jField tool (jFieldFn range.semverMatchFn jObject)) jvalue
+      jField vendor (jField tool (jFieldFn range.versionMatchFn jObject)) jvalue
     (tool, range, Nil) _=
-      jField tool (jFieldFn range.semverMatchFn jObject) jvalue
+      jField tool (jFieldFn range.versionMatchFn jObject) jvalue
     _ _ = Fail "resources string does not match [vendor/]tool/version format: {resourceString}".makeError
 
   def getEnvironment fields =
@@ -48,25 +48,25 @@ def getEnvironmentFromJValue semverMatchFn resourceString jvalue =
 tuple JSONEnvironmentRunnerPlan =
   global Name: String
   global ScoreFn: (baseScore: Double) => Double # modifier to apply to the base runner's score
-  global SemverMatchFn: (range: String) => (version: String) => Boolean # checks whether version range matches a given version
+  global VersionMatchFn: (range: String) => (version: String) => Boolean # checks whether version range matches a given version
   global JSONs: List JValue # jsons containing resource to environment mappings
   global BaseRunner: Runner
 
-global def makeJSONEnvironmentRunnerPlan name scoreFn semverMatchFn jsons baseRunner =
-  JSONEnvironmentRunnerPlan name scoreFn semverMatchFn jsons baseRunner
+global def makeJSONEnvironmentRunnerPlan name scoreFn versionMatchFn jsons baseRunner =
+  JSONEnvironmentRunnerPlan name scoreFn versionMatchFn jsons baseRunner
 
 
 # creates a runner that will add environment variables to a plan by looking up JValue's using resource strings
-# uses the resource string as a json path: 'vendor' and 'tool' should be exact matches and 'version' matches based on `semverMatchFn`
+# uses the resource string as a json path: 'vendor' and 'tool' should be exact matches and 'version' matches based on `versionMatchFn`
 # only the first match in the first JValue will be used for each resource string
 # scores are calculated by:
 #   1. removing resources that have a json mapping from the plan
 #   2. applying the `baseRunner`s score function on the altered plan
 #   3. applying`scoreFn` to the result of the base score function
-global def makeJSONEnvironmentRunner (JSONEnvironmentRunnerPlan name scoreFn semverMatchFn jValues baseRunner) =
+global def makeJSONEnvironmentRunner (JSONEnvironmentRunnerPlan name scoreFn versionMatchFn jValues baseRunner) =
   def getResourceEnvPairs resources =
     def getEnv resource =
-      def envResult = findPassFn (getEnvironmentFromJValue semverMatchFn resource) jValues
+      def envResult = findPassFn (getEnvironmentFromJValue versionMatchFn resource) jValues
       Pair resource envResult
     map getEnv resources
 
