@@ -1,0 +1,6 @@
+{
+    "google/protobuf/3.5.1": { 
+        "linux": ["/nix/store/kj6sscz41vpxvnk4yxjxl7n9q5my1ssb-protobuf-3.5.1"],
+        "fallback": ["protobuf-3.5.1"]
+    }
+}
