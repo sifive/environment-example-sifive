@@ -134,4 +134,4 @@ publish runner =
         Nil
       map makeJSONEnvironmentRunner plans
 
-publish environmentJSONs = source "environment.json", Nil
+publish environmentJSONs = sources here "environment.json", Nil
