@@ -1,0 +1,9 @@
+{
+    "google": {
+        "protobuf": {
+            "3.5.1": { 
+                "PATH": "/home/matthewc/work/workspace-proto/.workspace-profile.nix"   
+            }
+        }
+    }
+}

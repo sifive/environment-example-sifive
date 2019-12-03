@@ -133,3 +133,5 @@ publish runner =
         makeJSONEnvironmentRunnerPlan "environment-json-default" (_ *. 1.5) semverMatches jsons defaultRunner,
         Nil
       map makeJSONEnvironmentRunner plans
+
+publish environmentJSONs = source "environment.json", Nil
