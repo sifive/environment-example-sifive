@@ -2,7 +2,7 @@
     "google": {
         "protobuf": {
             "3.5.1": { 
-                "PATH": "/nix/store/kj6sscz41vpxvnk4yxjxl7n9q5my1ssb-protobuf-3.5.1/bin"
+                "PATH": "/nix/store/86bfdwjdflwlnylqqwl5518wrd8j53zv-protobuf-3.7.1/bin"
             }
         }
     }
