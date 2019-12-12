@@ -1,0 +1,14 @@
+
+def buildDir = mkdir "proto_build"
+
+# based on build.wake in api-firrtl-sifive
+global def compileProto _ =
+  def outDir = mkdir "{buildDir.getPathName}/proto"
+  def protoSrcs = sources here `.*\.proto`
+  def args = "--java_out={outDir.getPathName}", (map getPathName protoSrcs)
+  makePlan ("protoc", args) (outDir, protoSrcs)
+  | setPlanResources ("google/protobuf/3.5.1", Nil)
+  | runJob
+  | getJobOutputs
+
+
