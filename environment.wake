@@ -26,7 +26,7 @@ def prependOrElseSetEnv env (Pair key value) =
   editEnvironment key editFn env
 
 
-def getEnvironmentFromJValue versionMatchFn resourceString jvalue =
+global def getEnvironmentFromJValue versionMatchFn resourceString jvalue =
   def toolRange = extract `([^/]*)/([^/]*)` resourceString
   def vendorToolRange = extract `([^/]*)/([^/]*)/([^/]*)` resourceString
   def fieldsResult = match toolRange vendorToolRange
