@@ -125,7 +125,10 @@ publish runner =
     | findFail
   match jsonsResult
     Fail e =
-      def _ = printlnLevel logError "Failed to publish environment JSON runner: {e.getErrorCause}"
+      def _ = printlnLevel logError "environment-example-sifive: failed to publish environment JSON runner: {e.getErrorCause}"
+      Nil
+    Pass Nil =
+      def _ = printlnLevel logDebug "environment-example-sifive: nothing published to environmentJSONs, not publishing runners"
       Nil
     Pass jsons =
       def plans =
