@@ -117,6 +117,7 @@ global def semverMatches range version =
     | runJobWith localRunner
     | isJobOk
 
+global topic environmentJSONs : Path
 
 publish runner =
   def jsonsResult =
