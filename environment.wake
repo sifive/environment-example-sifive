@@ -25,7 +25,17 @@ def prependOrElseSetEnv env (Pair key value) =
     | Some
   editEnvironment key editFn env
 
-
+# Get environment variables from a JSON-based lookup table.
+#
+# Search through `jvalue` as a nested set of JObjects, using `resourceString` as
+# a `/`-delimited string of JSON keys to index into and using `versionMatchFn`
+# to decide if there exists a resource with a compatible version string.
+#
+# getEnvironmentFromJValue:
+# (versionMatchFn: String => String => Boolean) =>
+# (resourceString: String) =>
+# (jvalue: JValue) =>
+# Result (List (Pair String String)) Error
 global def getEnvironmentFromJValue versionMatchFn resourceString jvalue =
   def toolRange = extract `([^/]*)/([^/]*)` resourceString
   def vendorToolRange = extract `([^/]*)/([^/]*)/([^/]*)` resourceString
