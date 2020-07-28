@@ -1,0 +1,30 @@
+# Overriding example, a resource where 1.0.0 is replaced with 1.0.3
+#
+#   publish resourceOverrides = Pair "foo/baa/1.0.0" "foo/baa/1.0.3", Nil
+#
+# The Job's Plan will need to use either 'setDefaultResources' instead of
+# 'setPlanResources' or to instead manually use 'resolveOverrideableResources'
+# to make the mapping.
+#
+#   makePlan ("baa", Nil) Nil
+#   | setDefaultResources ("foo/baa/1.0.0", Nil)
+#   | runJob
+
+global topic resourceOverrides: Pair String String
+
+# Add a resource to a plan that can be later swapped via the
+# 'resourceOverrides' topic.
+# If the resources aren't matches the resources are used unchanged.
+global def setDefaultResources defaultResources plan =
+  def overridden = map resolveOverrideableResource defaultResources
+  setPlanResources overridden plan
+
+# Returns either the defaultResource (if no override provided),
+# or the overridden resource string.
+global def resolveOverrideableResource defaultResource =
+  def candidates = subscribe resourceOverrides
+  def condition  = getPairFirst _ ==~ defaultResource
+  def found = find condition candidates
+  match found
+    Some a = getPairFirst a | getPairSecond
+    None   = defaultResource
