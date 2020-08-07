@@ -97,7 +97,7 @@ global def makeJSONEnvironmentRunner (JSONEnvironmentRunnerPlan name scoreFn ver
     def inputFn input =
       def resourceEnvPairs = input.getRunnerInputResources.getResourceEnvPairs
       def newEnv =
-        def prependEnv env1 (Pair resource envResult) = match envResult
+        def prependEnv env1 (Pair _ envResult) = match envResult
           Pass env2 = foldl prependOrElseSetEnv env1 env2
           Fail _ = env1
         input
