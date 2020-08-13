@@ -1,0 +1,18 @@
+name: Test
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  typecheck:
+    name: 'Wake typecheck'
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: sifive/wit/actions/init@v0.13.2
+    - uses: sifive/environment-blockci-sifive/actions/wake@0.7.0
