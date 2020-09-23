@@ -1,0 +1,22 @@
+# Allow the user to have a shell environment variable to change
+# environmental setting within their wake rules.
+# Examples would include the publishing/setting of locations of toolchains.
+# For example:
+#
+#   $ export WAKE_ENV=home
+#   $ wake -x 'getFooLocation'
+#     /home/user/bin/foo
+#   $ export WAKE_ENV=work
+#   $ wake -x 'getFooLocation'
+#     /opt/foo
+#
+# This would work in conjunction with environment packages that publish/subscribe topics
+# like environment-example-sifive's environmentJSONs:
+#
+#   publish environmentJSONs = ifWakeEnv "home" (source "{here}/tools.json", Nil)
+#
+# The behaviour when WAKE_ENV is not set, is to fallback to providing the list.
+global def ifWakeEnv where list =
+  match (getenv "WAKE_ENV")
+    Some env = if env ==~ where then list else Nil
+    None     = list
