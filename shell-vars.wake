@@ -20,3 +20,12 @@ global def ifWakeEnv where list =
   match (getenv "WAKE_ENV")
     Some env = if env ==~ where then list else Nil
     None     = list
+
+# Use this in preference to ifWakeEnv
+global def ifWakeEnvIsUndefinedOrEquals = ifWakeEnv
+
+# Return the list if and only if 'where' equals 'WAKE_ENV'
+global def whenWakeEnv where list =
+  match (getenv "WAKE_ENV")
+    Some env = if env ==~ where then list else Nil
+    None     = Nil
